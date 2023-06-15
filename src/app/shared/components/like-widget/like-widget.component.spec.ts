@@ -1,25 +1,44 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LikeWidgetComponent } from './like-widget.component';
+import { UniqueIdService } from '../../services/unique-id/unique-id.service';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { LikeWidgetModule } from './like-widget.module';
+import { doesNotReject } from 'assert';
 
-describe('LikeWidgetComponent', () => {
-  let component: LikeWidgetComponent;
-  let fixture: ComponentFixture<LikeWidgetComponent>;
+describe(LikeWidgetComponent.name, () => {
+  let fixture: ComponentFixture<LikeWidgetComponent> = null;
+  let component: LikeWidgetComponent = null;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LikeWidgetComponent ]
-    })
-    .compileComponents();
-  });
+      imports: [LikeWidgetModule],
+    }).compileComponents();
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(LikeWidgetComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create component', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should auto generate ID during ngOnInit when (@Input id) is not assigned', () => {
+    fixture.detectChanges();
+    expect(component.id).toBeTruthy();
+  });
+
+  it('shout NOT auto-generate Id during ngOnInit when (@Input id) is assigned', () => {
+    const someId = 'someId';
+    component.id = someId;
+    fixture.detectChanges();
+    expect(component.id).toBe(someId);
+  });
+
+  it(`#${LikeWidgetComponent.prototype.like.name} should trigger (@Output liked) when called`, () => {
+    spyOn(component.liked, 'emit');
+    fixture.detectChanges();
+    component.like();
+    expect(component.liked.emit).toHaveBeenCalled();
   });
 });
